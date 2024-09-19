@@ -1,11 +1,18 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector  } from 'react-redux';
+import { addItem } from './CartSlice';
 import './ProductList.css'
 import CartItem from './CartItem';
-import addItem from './CartSlice';
+
 function ProductList() {
     const [showCart, setShowCart] = useState(false); 
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
     const [addedToCart, setAddedToCart] = useState({});
+    const dispatch = useDispatch();
+    const cartItems = useSelector((state) => state.cart.items);
+    const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
+    const [disabledButtons, setDisabledButtons] = useState({});
+
     const plantsArray = [
         
         {
@@ -214,13 +221,7 @@ function ProductList() {
             ]
         }
     ];
-    const handleAddToCart = (product) => {
-        dispatch(addItem(product));
-        setAddedToCart((prevState) => ({
-           ...prevState,
-           [product.name]: true, // Set the product name as key and value as true to indicate it's added to cart
-         }));
-      };
+
    const styleObj={
     backgroundColor: '#4CAF50',
     color: '#fff!important',
@@ -241,10 +242,21 @@ function ProductList() {
     fontSize: '30px',
     textDecoration: 'none',
    }
-   const handleCartClick = (e) => {
+
+const handleCartClick = (e) => {
     e.preventDefault();
     setShowCart(true); // Set showCart to true when cart icon is clicked
+    setShowPlants(false);
 };
+
+const handleAddToCart = (product) => {
+    dispatch(addItem(product));
+    setAddedToCart((prevState) => ({
+       ...prevState,
+       [product.name]: true, // Set the product name as key and value as true to indicate it's added to cart
+     }));
+  };
+
 const handlePlantsClick = (e) => {
     e.preventDefault();
     setShowPlants(true); // Set showAboutUs to true when "About Us" link is clicked
